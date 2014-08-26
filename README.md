@@ -196,7 +196,7 @@ You can play with Google APIs thanks to the [Oauth playground](https://developer
 Generate a `Contact` model with
 
 ```bash
-$ rails g model contact email name tel picture
+$ rails g model contact email:string name:string tel:string picture:string
 ```
 
 You need to require `open-uri` on top of your model, for handling request to Google APIs
@@ -239,7 +239,7 @@ end
 Now, in the same way, generate a model for the events:
 
 ```bash
-rails g model event name creator start status link calendar
+rails g model event name:string creator:string start:datetime status:string link:string calendar:string
 ```
 
 And now the methods in your model to call the calendar API
