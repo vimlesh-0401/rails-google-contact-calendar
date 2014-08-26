@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  start: 2014-08-26 10:10:48
+  creator: MyString
+  link: MyString
+  status: MyString
+  calendar: MyString
+
+two:
+  name: MyString
+  start: 2014-08-26 10:10:48
+  creator: MyString
+  link: MyString
+  status: MyString
+  calendar: MyString
