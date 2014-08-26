@@ -87,17 +87,18 @@ class User < ActiveRecord::Base
       name = event["summary"] || "no name"
       creator = event["creator"] ? event["creator"]["email"] : nil
       start = event["start"] ? event["start"]["dateTime"] : nil
+      status = event["status"] || nil
       link = event["htmlLink"] || nil
       calendar = cal["summary"] || nil
 
       events.create(name: name,
                     creator: creator,
+                    status: status,
                     start: start,
                     link: link,
                     calendar: calendar
                     )
     end
-
   end
 
 end
