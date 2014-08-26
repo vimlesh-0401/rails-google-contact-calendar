@@ -199,19 +199,26 @@ Generate a `Contact` model with
 $ rails g model contact email name tel picture
 ```
 
+You need to require `open-uri` on top of your model, for handling request to Google APIs
+
+```ruby
+require "open-uri"
+
+class User < ActiveRecord::Base
+
+# etc..
+
+end
+```
+
 Now add this new method to your user model to store all the contacts of the user when he first logs in.
 
 ```ruby
 def get_google_contacts
-
-  uri = URI.parse("https://www.google.com/m8/feeds/contacts/default/full?access_token=#{token}&alt=json&max-results=100")
-
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  request = Net::HTTP::Get.new(uri.request_uri)
-  result = http.request(request).body
-  my_contacts = ActiveSupport::JSON.decode(result)['feed']['entry']
+  url = "https://www.google.com/m8/feeds/contacts/default/full?access_token=#{token}&alt=json&max-results=100"
+  response = open(url)
+  json = JSON.parse(response.read)
+  my_contacts = json['feed']['entry']
 
   my_contacts.each do |contact|
     name = contact['title']['$t'] || nil
@@ -239,30 +246,19 @@ And now the methods in your model to call the calendar API
 
 ```ruby
 def get_google_calendars
-
-  uri = URI.parse("https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=#{token}")
-
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  request = Net::HTTP::Get.new(uri.request_uri)
-  result = http.request(request).body
-  calendars = ActiveSupport::JSON.decode(result)["items"]
-
+  url = "https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=#{token}"
+  response = open(url)
+  json = JSON.parse(response.read)
+  calendars = json["items"]
   calendars.each { |cal| get_events_for_calendar(cal) }
-
 end
 
 def get_events_for_calendar(cal)
 
-  uri = URI.parse("https://www.googleapis.com/calendar/v3/calendars/#{cal["id"]}/events?access_token=#{token}")
-
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  request = Net::HTTP::Get.new(uri.request_uri)
-  result = http.request(request).body
-  my_events = ActiveSupport::JSON.decode(result)["items"]
+  url = "https://www.googleapis.com/calendar/v3/calendars/#{cal["id"]}/events?access_token=#{token}"
+  response = open(url)
+  json = JSON.parse(response.read)
+  my_events = json["items"]
 
   my_events.each do |event|
     name = event["summary"] || "no name"
@@ -282,3 +278,5 @@ def get_events_for_calendar(cal)
   end
 end
 ```
+
+Of course, it's up to you to **refactor this code**, e.g. which should be put in an external module with DRY code. It's just a functional demo for the growth hackers you'll soon be!

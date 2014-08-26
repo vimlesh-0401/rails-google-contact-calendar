@@ -1,3 +1,5 @@
+require "open-uri"
+
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -32,17 +34,26 @@ class User < ActiveRecord::Base
       user
   end
 
+  def call_api(url)
+    response = open(url)
+    JSON.parse(response.read)
+
+    #uri = URI.parse(url)
+
+    #http = Net::HTTP.new(uri.host, uri.port)
+    #http.use_ssl = true
+    #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    #request = Net::HTTP::Get.new(uri.request_uri)
+    #result = http.request(request).body
+    #ActiveSupport::JSON.decode(result)
+  end
+
 
   def get_google_contacts
-
-    uri = URI.parse("https://www.google.com/m8/feeds/contacts/default/full?access_token=#{token}&alt=json&max-results=100")
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new(uri.request_uri)
-    result = http.request(request).body
-    my_contacts = ActiveSupport::JSON.decode(result)['feed']['entry']
+    url = "https://www.google.com/m8/feeds/contacts/default/full?access_token=#{token}&alt=json&max-results=100"
+    response = open(url)
+    json = JSON.parse(response.read)
+    my_contacts = json['feed']['entry']
 
     my_contacts.each do |contact|
       name = contact['title']['$t'] || nil
@@ -58,30 +69,19 @@ class User < ActiveRecord::Base
   end
 
   def get_google_calendars
-
-    uri = URI.parse("https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=#{token}")
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new(uri.request_uri)
-    result = http.request(request).body
-    calendars = ActiveSupport::JSON.decode(result)["items"]
-
+    url = "https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token=#{token}"
+    response = open(url)
+    json = JSON.parse(response.read)
+    calendars = json["items"]
     calendars.each { |cal| get_events_for_calendar(cal) }
-
   end
 
   def get_events_for_calendar(cal)
 
-    uri = URI.parse("https://www.googleapis.com/calendar/v3/calendars/#{cal["id"]}/events?access_token=#{token}")
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new(uri.request_uri)
-    result = http.request(request).body
-    my_events = ActiveSupport::JSON.decode(result)["items"]
+    url = "https://www.googleapis.com/calendar/v3/calendars/#{cal["id"]}/events?access_token=#{token}"
+    response = open(url)
+    json = JSON.parse(response.read)
+    my_events = json["items"]
 
     my_events.each do |event|
       name = event["summary"] || "no name"
