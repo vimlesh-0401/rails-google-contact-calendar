@@ -1,29 +1,22 @@
 source 'https://rubygems.org'
 
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.4'
-# Use sqlite3 as the database for Active Record
+gem 'rails', '~> 5.1.6', '>= 5.1.6.1'
+gem 'puma', '~> 3.7'
+
 gem 'sqlite3'
-# Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.3'
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
-# Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails', '~> 4.0.0'
-# See https://github.com/sstephenson/execjs#readme for more supported runtimes
-# gem 'therubyracer',  platforms: :ruby
-
-# Use jquery as the JavaScript library
-gem 'jquery-rails'
-# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
+gem 'sass-rails', '~> 5.0', '>= 5.0.7'
+gem 'uglifier', '~> 4.1', '>= 4.1.20'
+gem 'coffee-rails', '~> 4.2', '>= 4.2.2'
+gem 'jquery-rails', '~> 4.3', '>= 4.3.3'
 gem 'turbolinks'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', '~> 0.4.0',          group: :doc
+gem 'jbuilder', '~> 2.8'
+gem 'sdoc', '~> 1.0',          group: :doc
 
-# Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 gem 'spring',        group: :development
 
 group :development do
@@ -33,22 +26,20 @@ end
 
 gem "bootstrap-sass"
 
-# Devise with fb-omniauth extension
 gem "devise"
 gem "omniauth-google-oauth2"
+gem 'google-api-client', '0.8.2', require: 'google/api_client'
+# gem 'google-api-client', '~> 0.28.2'
+gem 'figaro', '~> 1.1', '>= 1.1.1'
 
-# For handling API keys
-gem 'figaro', '~> 1.0.0.rc1'
+group :development, :test do
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+end
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+group :development do
+  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'spring'
+  gem 'spring-watcher-listen', '~> 2.0.0'
+end
 
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
-
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
